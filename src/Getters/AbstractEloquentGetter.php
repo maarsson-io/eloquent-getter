@@ -4,6 +4,7 @@ namespace Maarsson\EloquentGetter\Getters;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -67,7 +68,6 @@ abstract class AbstractEloquentGetter
     public function order(): self
     {
         $sortBy = $this->getSorterMethod() ?: $this->getSorterColumn();
-
         if ($sortBy) {
             $this->builder->orderBy(
                 $this->getSorterMethod() ?: $this->request->get('sort_by', 'id'),
@@ -134,9 +134,9 @@ abstract class AbstractEloquentGetter
      * Gets the requested sorter method.
      * Request string converts to camel case.
      *
-     * @return null|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+     * @return null|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder|\Illuminate\Database\Query\Expression
      */
-    protected function getSorterMethod(): null|EloquentBuilder|QueryBuilder
+    protected function getSorterMethod(): null|EloquentBuilder|QueryBuilder|Expression
     {
         $method = Str::of($this->request->get('sort_by'))
             ->camel()
