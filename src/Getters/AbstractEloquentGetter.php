@@ -68,12 +68,15 @@ abstract class AbstractEloquentGetter
     public function order(): self
     {
         $sortBy = $this->getSorterMethod() ?: $this->getSorterColumn();
-        if ($sortBy) {
-            $this->builder->orderBy(
-                $this->getSorterMethod() ?: $this->request->get('sort_by', 'id'),
-                $this->request->get('sort_order', 'asc')
-            );
+
+        if (! $sortBy) {
+            return $this;
         }
+
+        $this->builder->orderBy(
+            $sortBy,
+            $this->request->get('sort_order', 'asc')
+        );
 
         return $this;
     }
