@@ -61,6 +61,18 @@ abstract class AbstractEloquentGetter
     }
 
     /**
+     * Adds global query scope to builder.
+     *
+     * @return self
+     */
+    public function scope(callable $scope): self
+    {
+        $scope($this->builder);
+
+        return $this;
+    }
+
+    /**
      * Adds ordering to query.
      *
      * @return self
