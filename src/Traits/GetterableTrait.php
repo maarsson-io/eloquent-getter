@@ -38,12 +38,13 @@ trait GetterableTrait
      * Scope a query to apply given filter.
      *
      * @param \Maarsson\EloquentGetter\Filters\AbstractEloquentGetter $filter
+     * @param array $relations
      *
      * @return \Maarsson\EloquentGetter\Filters\AbstractEloquentGetter
      */
-    public function filter(?AbstractEloquentGetter $getter = null): AbstractEloquentGetter
+    public function filter(?AbstractEloquentGetter $getter = null, array $relations = []): AbstractEloquentGetter
     {
-        return $getter->apply($this->query())->filter();
+        return $getter->apply($this->query()->with($relations))->filter();
     }
 
     /**
