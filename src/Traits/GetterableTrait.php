@@ -8,6 +8,13 @@ use Maarsson\EloquentGetter\Getters\AbstractEloquentGetter;
 trait GetterableTrait
 {
     /**
+     * Relations to eager load on the next getter query.
+     *
+     * @var array<int|string, mixed>
+     */
+    private array $getterRelations = [];
+
+    /**
      * The required model attributes and/or relations´ attributes,
      * even with column specifications.
      * Note that the subrelations´ id must be given when querying subrelation.
@@ -17,21 +24,31 @@ trait GetterableTrait
     private array $withAttributes = [];
 
     /**
-     * Get a subset of the model's attributes and/or relations' attributes.
+     * Get a subset of the model's attributes and relations.
      *
-     * @param array $attributes
+     * @param null|array<int, string> $attributes
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function withAttributes(?array $attributes = []): array
     {
-        $this->withAttributes = $attributes;
-
-        return empty($this->withAttributes) ?
+        return empty($attributes) ?
             $this->toArray()
             :
-            $this->load($this->getValidRelations())
-                ->only($this->getValidAttributes());
+            $this->loadMissing($this->getValidRelations($attributes))
+                ->only($this->getValidAttributes($attributes));
+    }
+
+    /**
+     * Set valid relations to eager load on the next getter query.
+     *
+     * @param array<int, string> $relations
+     */
+    public function withRelations(array $relations): self
+    {
+        $this->getterRelations = $this->getValidRelations($relations);
+
+        return $this;
     }
 
     /**
@@ -44,6 +61,13 @@ trait GetterableTrait
      */
     public function filter(?AbstractEloquentGetter $getter = null, array $relations = []): AbstractEloquentGetter
     {
+        $relations = array_merge(
+            $this->getterRelations,
+            $relations
+        );
+
+        $this->getterRelations = [];
+
         return $getter->apply($this->query()->with($relations))->filter();
     }
 
@@ -60,30 +84,42 @@ trait GetterableTrait
     }
 
     /**
-     * Filters the required attributes
-     * to only the valid relations.
+     * Return only valid model relations.
      *
-     * @return array
+     * @param array<int, string> $attributes
+     *
+     * @return array<int, string>
      */
-    private function getValidRelations(): array
+    private function getValidRelations(array $attributes): array
     {
-        return collect($this->withAttributes)->filter(function ($attribute) {
-            $withoutColumnSpecifications = explode(':', $attribute)[0];
+        return collect($attributes)
+                ->filter(function (string $attribute): bool {
+                    $relation = Str::before($attribute, ':');
+                    $rootRelation = Str::before($relation, '.');
 
-            return $this->isRelation($withoutColumnSpecifications) || Str::contains($withoutColumnSpecifications, '.');
-        })->toArray();
+                    return $rootRelation !== ''
+                        && $this->isRelation($rootRelation);
+                })
+                ->values()
+                ->all();
     }
 
     /**
-     * Filters the required attributes
-     * to only the valid attributes.
+     * Return the root attributes requested from the model.
      *
-     * @return array
+     * @param array<int, string> $attributes
+     *
+     * @return array<int, string>
      */
-    private function getValidAttributes(): array
+    private function getValidAttributes(array $attributes): array
     {
-        return collect($this->withAttributes)->map(function ($attribute) {
-            return explode('.', explode(':', $attribute)[0])[0];
-        })->toArray();
+        return collect($attributes)
+            ->map(
+                fn (string $attribute): string =>
+                    explode('.', explode(':', $attribute, 2)[0], 2)[0]
+            )
+            ->unique()
+            ->values()
+            ->all();
     }
 }
