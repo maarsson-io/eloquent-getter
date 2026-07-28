@@ -37,10 +37,10 @@ trait GetterableTrait
     /**
      * Scope a query to apply given filter.
      *
-     * @param \Maarsson\EloquentGetter\Filters\AbstractEloquentGetter $filter
+     * @param \Maarsson\EloquentGetter\Getters\AbstractEloquentGetter $filter
      * @param array $relations
      *
-     * @return \Maarsson\EloquentGetter\Filters\AbstractEloquentGetter
+     * @return \Maarsson\EloquentGetter\Getters\AbstractEloquentGetter
      */
     public function filter(?AbstractEloquentGetter $getter = null, array $relations = []): AbstractEloquentGetter
     {
@@ -50,9 +50,9 @@ trait GetterableTrait
     /**
      * Scope a query to apply given sorter.
      *
-     * @param \Maarsson\EloquentGetter\Filters\AbstractEloquentGetter $filter
+     * @param \Maarsson\EloquentGetter\Getters\AbstractEloquentGetter $filter
      *
-     * @return \Maarsson\EloquentGetter\Filters\AbstractEloquentGetter
+     * @return \Maarsson\EloquentGetter\Getters\AbstractEloquentGetter
      */
     public function order(?AbstractEloquentGetter $getter = null): AbstractEloquentGetter
     {
