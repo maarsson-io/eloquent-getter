@@ -1,2 +1,7 @@
-todo
+# Composer dependencies (composer.lock is intentionally versioned)
+/vendor/
+
+# Code quality artifacts
 /.php-cs-fixer.cache
+
+todo

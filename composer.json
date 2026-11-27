@@ -11,7 +11,12 @@
     ],
     "require": {
         "php": "^8.1",
-            "laravel/framework": ">=10.0"
+        "laravel/framework": ">=10.0"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.13",
+        "phpmd/phpmd": "^2.15",
+        "friendsofphp/php-cs-fixer": "^3.95"
     },
     "autoload": {
         "psr-4": {
@@ -24,5 +29,10 @@
                 "Maarsson\\EloquentGetter\\Providers\\EloquentGetterServiceProvider"
             ]
         }
+    },
+    "scripts": {
+        "ci:phpcs": "phpcs --standard=.phpcs.xml src config",
+        "ci:phpmd": "phpmd src,config text phpmd.xml",
+        "ci:php-cs-fixer": "php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.php"
     }
 }
