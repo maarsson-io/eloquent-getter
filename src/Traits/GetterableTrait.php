@@ -93,15 +93,15 @@ trait GetterableTrait
     private function getValidRelations(array $attributes): array
     {
         return collect($attributes)
-                ->filter(function (string $attribute): bool {
-                    $relation = Str::before($attribute, ':');
-                    $rootRelation = Str::before($relation, '.');
+            ->filter(function (string $attribute): bool {
+                $relation = Str::before($attribute, ':');
+                $rootRelation = Str::before($relation, '.');
 
-                    return $rootRelation !== ''
-                        && $this->isRelation($rootRelation);
-                })
-                ->values()
-                ->all();
+                return $rootRelation !== ''
+                    && $this->isRelation($rootRelation);
+            })
+            ->values()
+            ->all();
     }
 
     /**
@@ -115,8 +115,7 @@ trait GetterableTrait
     {
         return collect($attributes)
             ->map(
-                fn (string $attribute): string =>
-                    explode('.', explode(':', $attribute, 2)[0], 2)[0]
+                fn (string $attribute): string => explode('.', explode(':', $attribute, 2)[0], 2)[0]
             )
             ->unique()
             ->values()
